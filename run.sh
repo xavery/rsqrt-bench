@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 set -e
-set -x
 
 del_tmp_report() {
   rm -f "$fname"
@@ -48,4 +47,4 @@ write_cmd_output "Output" ./build/bench
 
 sudo cpupower frequency-set --governor ${current_governor}
 
-cat "$fname" > RESULTS.md
+cat "$fname" >> RESULTS.md
