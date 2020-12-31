@@ -476,3 +476,177 @@ BM_sqrt/normal_rsqrt_test       45.4 ns         45.4 ns     15426801
 BM_sqrt/quake_rsqrt_test        27.7 ns         27.7 ns     25312028
 ```
 
+# Intel(R) Core(TM) i7-9850H CPU @ 2.60GHz
+
+## GCC version
+
+```
+gcc (Ubuntu 10.2.0-13ubuntu1) 10.2.0
+Copyright (C) 2020 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+```
+
+## Assembly
+
+```
+
+build/CMakeFiles/bench.dir/rsqrt.c.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 <rsqrt>:
+   0:	f3 0f 1e fa          	endbr64 
+   4:	c5 f0 57 c9          	vxorps xmm1,xmm1,xmm1
+   8:	c5 f8 2e c8          	vucomiss xmm1,xmm0
+   c:	77 11                	ja     1f <rsqrt+0x1f>
+   e:	c5 fa 51 c0          	vsqrtss xmm0,xmm0,xmm0
+  12:	c5 fa 10 0d 00 00 00 	vmovss xmm1,DWORD PTR [rip+0x0]        # 1a <rsqrt+0x1a>
+  19:	00 
+  1a:	c5 f2 5e c0          	vdivss xmm0,xmm1,xmm0
+  1e:	c3                   	ret    
+  1f:	50                   	push   rax
+  20:	e8 00 00 00 00       	call   25 <rsqrt+0x25>
+  25:	c5 fa 10 0d 00 00 00 	vmovss xmm1,DWORD PTR [rip+0x0]        # 2d <rsqrt+0x2d>
+  2c:	00 
+  2d:	5a                   	pop    rdx
+  2e:	c5 f2 5e c0          	vdivss xmm0,xmm1,xmm0
+  32:	c3                   	ret    
+  33:	66 66 2e 0f 1f 84 00 	data16 nop WORD PTR cs:[rax+rax*1+0x0]
+  3a:	00 00 00 00 
+  3e:	66 90                	xchg   ax,ax
+
+0000000000000040 <Q_rsqrt>:
+  40:	f3 0f 1e fa          	endbr64 
+  44:	48 83 ec 18          	sub    rsp,0x18
+  48:	64 48 8b 04 25 28 00 	mov    rax,QWORD PTR fs:0x28
+  4f:	00 00 
+  51:	48 89 44 24 08       	mov    QWORD PTR [rsp+0x8],rax
+  56:	31 c0                	xor    eax,eax
+  58:	c5 fa 11 44 24 04    	vmovss DWORD PTR [rsp+0x4],xmm0
+  5e:	c5 fa 59 05 00 00 00 	vmulss xmm0,xmm0,DWORD PTR [rip+0x0]        # 66 <Q_rsqrt+0x26>
+  65:	00 
+  66:	b8 01 00 00 00       	mov    eax,0x1
+  6b:	c4 e2 fa f7 54 24 04 	sarx   rdx,QWORD PTR [rsp+0x4],rax
+  72:	b8 df 59 37 5f       	mov    eax,0x5f3759df
+  77:	29 d0                	sub    eax,edx
+  79:	c5 f9 6e c8          	vmovd  xmm1,eax
+  7d:	c5 fa 59 c1          	vmulss xmm0,xmm0,xmm1
+  81:	c4 e2 71 ad 05 00 00 	vfnmadd213ss xmm0,xmm1,DWORD PTR [rip+0x0]        # 8a <Q_rsqrt+0x4a>
+  88:	00 00 
+  8a:	c5 f2 59 c0          	vmulss xmm0,xmm1,xmm0
+  8e:	48 8b 44 24 08       	mov    rax,QWORD PTR [rsp+0x8]
+  93:	64 48 2b 04 25 28 00 	sub    rax,QWORD PTR fs:0x28
+  9a:	00 00 
+  9c:	75 05                	jne    a3 <Q_rsqrt+0x63>
+  9e:	48 83 c4 18          	add    rsp,0x18
+  a2:	c3                   	ret    
+  a3:	e8 00 00 00 00       	call   a8 <Q_rsqrt+0x68>
+```
+
+## Output
+
+```
+2020-12-31T02:13:43+00:00
+Running ./build/bench
+Run on (12 X 4600 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x6)
+  L1 Instruction 32 KiB (x6)
+  L2 Unified 256 KiB (x6)
+  L3 Unified 12288 KiB (x1)
+Load Average: 1.97, 0.98, 0.47
+--------------------------------------------------------------------
+Benchmark                          Time             CPU   Iterations
+--------------------------------------------------------------------
+BM_sqrt/normal_rsqrt_test       1.35 ns         1.35 ns    503263766
+BM_sqrt/quake_rsqrt_test        7.43 ns         7.43 ns     94386819
+```
+
+# AMD Ryzen 7 3700X 8-Core Processor
+
+## GCC version
+
+```
+gcc (GCC) 10.2.0
+Copyright (C) 2020 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+```
+
+## Assembly
+
+```
+
+build/CMakeFiles/bench.dir/rsqrt.c.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 <rsqrt>:
+   0:	c5 f0 57 c9          	vxorps xmm1,xmm1,xmm1
+   4:	c5 f8 2e c8          	vucomiss xmm1,xmm0
+   8:	77 11                	ja     1b <rsqrt+0x1b>
+   a:	c5 fa 10 0d 00 00 00 	vmovss xmm1,DWORD PTR [rip+0x0]        # 12 <rsqrt+0x12>
+  11:	00 
+  12:	c5 fa 51 c0          	vsqrtss xmm0,xmm0,xmm0
+  16:	c5 f2 5e c0          	vdivss xmm0,xmm1,xmm0
+  1a:	c3                   	ret    
+  1b:	50                   	push   rax
+  1c:	e8 00 00 00 00       	call   21 <rsqrt+0x21>
+  21:	c5 fa 10 0d 00 00 00 	vmovss xmm1,DWORD PTR [rip+0x0]        # 29 <rsqrt+0x29>
+  28:	00 
+  29:	5a                   	pop    rdx
+  2a:	c5 f2 5e c0          	vdivss xmm0,xmm1,xmm0
+  2e:	c3                   	ret    
+  2f:	90                   	nop
+
+0000000000000030 <Q_rsqrt>:
+  30:	48 83 ec 18          	sub    rsp,0x18
+  34:	64 48 8b 04 25 28 00 	mov    rax,QWORD PTR fs:0x28
+  3b:	00 00 
+  3d:	48 89 44 24 08       	mov    QWORD PTR [rsp+0x8],rax
+  42:	31 c0                	xor    eax,eax
+  44:	c5 fa 11 44 24 04    	vmovss DWORD PTR [rsp+0x4],xmm0
+  4a:	c5 fa 59 05 00 00 00 	vmulss xmm0,xmm0,DWORD PTR [rip+0x0]        # 52 <Q_rsqrt+0x22>
+  51:	00 
+  52:	b8 01 00 00 00       	mov    eax,0x1
+  57:	c4 e2 fa f7 54 24 04 	sarx   rdx,QWORD PTR [rsp+0x4],rax
+  5e:	b8 df 59 37 5f       	mov    eax,0x5f3759df
+  63:	29 d0                	sub    eax,edx
+  65:	c5 f9 6e c8          	vmovd  xmm1,eax
+  69:	48 8b 44 24 08       	mov    rax,QWORD PTR [rsp+0x8]
+  6e:	64 48 2b 04 25 28 00 	sub    rax,QWORD PTR fs:0x28
+  75:	00 00 
+  77:	c5 fa 59 c1          	vmulss xmm0,xmm0,xmm1
+  7b:	c4 e2 71 ad 05 00 00 	vfnmadd213ss xmm0,xmm1,DWORD PTR [rip+0x0]        # 84 <Q_rsqrt+0x54>
+  82:	00 00 
+  84:	c5 f2 59 c0          	vmulss xmm0,xmm1,xmm0
+  88:	75 05                	jne    8f <Q_rsqrt+0x5f>
+  8a:	48 83 c4 18          	add    rsp,0x18
+  8e:	c3                   	ret    
+  8f:	e8 00 00 00 00       	call   94 <Q_rsqrt+0x64>
+```
+
+## Output
+
+```
+2020-12-31T03:22:10+01:00
+Running ./build/bench
+Run on (16 X 3600 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x8)
+  L1 Instruction 32 KiB (x8)
+  L2 Unified 512 KiB (x8)
+  L3 Unified 16384 KiB (x2)
+Load Average: 2.21, 0.62, 0.22
+--------------------------------------------------------------------
+Benchmark                          Time             CPU   Iterations
+--------------------------------------------------------------------
+BM_sqrt/normal_rsqrt_test       2.19 ns         2.19 ns    318904332
+BM_sqrt/quake_rsqrt_test        9.46 ns         9.46 ns     73951951
+```
+
