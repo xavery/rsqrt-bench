@@ -650,3 +650,82 @@ BM_sqrt/normal_rsqrt_test       2.19 ns         2.19 ns    318904332
 BM_sqrt/quake_rsqrt_test        9.46 ns         9.46 ns     73951951
 ```
 
+# Intel(R) Celeron(R) J4105 CPU @ 1.50GHz
+
+## GCC version
+
+```
+gcc (Debian 10.2.1-3) 10.2.1 20201224
+Copyright (C) 2020 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+```
+
+## Assembly
+
+```
+
+build/CMakeFiles/bench.dir/rsqrt.c.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 <rsqrt>:
+   0:	0f 57 c9             	xorps  xmm1,xmm1
+   3:	0f 2e c8             	ucomiss xmm1,xmm0
+   6:	77 15                	ja     1d <rsqrt+0x1d>
+   8:	f3 0f 51 c0          	sqrtss xmm0,xmm0
+   c:	f3 0f 10 0d 00 00 00 	movss  xmm1,DWORD PTR [rip+0x0]        # 14 <rsqrt+0x14>
+  13:	00 
+  14:	f3 0f 5e c8          	divss  xmm1,xmm0
+  18:	f3 0f 10 c1          	movss  xmm0,xmm1
+  1c:	c3                   	ret    
+  1d:	50                   	push   rax
+  1e:	e8 00 00 00 00       	call   23 <rsqrt+0x23>
+  23:	f3 0f 10 0d 00 00 00 	movss  xmm1,DWORD PTR [rip+0x0]        # 2b <rsqrt+0x2b>
+  2a:	00 
+  2b:	5a                   	pop    rdx
+  2c:	f3 0f 5e c8          	divss  xmm1,xmm0
+  30:	f3 0f 10 c1          	movss  xmm0,xmm1
+  34:	c3                   	ret    
+  35:	66 66 2e 0f 1f 84 00 	data16 nop WORD PTR cs:[rax+rax*1+0x0]
+  3c:	00 00 00 00 
+
+0000000000000040 <Q_rsqrt>:
+  40:	f3 0f 11 44 24 fc    	movss  DWORD PTR [rsp-0x4],xmm0
+  46:	48 8b 54 24 fc       	mov    rdx,QWORD PTR [rsp-0x4]
+  4b:	f3 0f 59 05 00 00 00 	mulss  xmm0,DWORD PTR [rip+0x0]        # 53 <Q_rsqrt+0x13>
+  52:	00 
+  53:	48 d1 fa             	sar    rdx,1
+  56:	b8 df 59 37 5f       	mov    eax,0x5f3759df
+  5b:	29 d0                	sub    eax,edx
+  5d:	66 0f 6e d0          	movd   xmm2,eax
+  61:	f3 0f 59 c2          	mulss  xmm0,xmm2
+  65:	f3 0f 10 0d 00 00 00 	movss  xmm1,DWORD PTR [rip+0x0]        # 6d <Q_rsqrt+0x2d>
+  6c:	00 
+  6d:	f3 0f 59 c2          	mulss  xmm0,xmm2
+  71:	f3 0f 5c c8          	subss  xmm1,xmm0
+  75:	f3 0f 59 ca          	mulss  xmm1,xmm2
+  79:	f3 0f 10 c1          	movss  xmm0,xmm1
+  7d:	c3                   	ret    
+```
+
+## Output
+
+```
+2020-12-31T03:38:01+01:00
+Running ./build/bench
+Run on (4 X 2500 MHz CPU s)
+CPU Caches:
+  L1 Data 24 KiB (x4)
+  L1 Instruction 32 KiB (x4)
+  L2 Unified 4096 KiB (x1)
+Load Average: 2.60, 0.73, 0.39
+--------------------------------------------------------------------
+Benchmark                          Time             CPU   Iterations
+--------------------------------------------------------------------
+BM_sqrt/normal_rsqrt_test       6.47 ns         6.47 ns    107822429
+BM_sqrt/quake_rsqrt_test        15.3 ns         15.3 ns     45662855
+```
+
