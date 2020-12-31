@@ -729,3 +729,180 @@ BM_sqrt/normal_rsqrt_test       6.47 ns         6.47 ns    107822429
 BM_sqrt/quake_rsqrt_test        15.3 ns         15.3 ns     45662855
 ```
 
+# AMD FX(tm)-4100 Quad-Core Processor
+
+## GCC version
+
+```
+gcc (Ubuntu 10.2.0-13ubuntu1) 10.2.0
+Copyright (C) 2020 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+```
+
+## Assembly
+
+```
+
+build/CMakeFiles/bench.dir/rsqrt.c.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 <rsqrt>:
+   0:	f3 0f 1e fa          	endbr64 
+   4:	c5 f0 57 c9          	vxorps xmm1,xmm1,xmm1
+   8:	c5 f8 2e c8          	vucomiss xmm1,xmm0
+   c:	77 11                	ja     1f <rsqrt+0x1f>
+   e:	c5 fa 10 0d 00 00 00 	vmovss xmm1,DWORD PTR [rip+0x0]        # 16 <rsqrt+0x16>
+  15:	00 
+  16:	c5 fa 51 c0          	vsqrtss xmm0,xmm0,xmm0
+  1a:	c5 f2 5e c0          	vdivss xmm0,xmm1,xmm0
+  1e:	c3                   	ret    
+  1f:	50                   	push   rax
+  20:	e8 00 00 00 00       	call   25 <rsqrt+0x25>
+  25:	c5 fa 10 0d 00 00 00 	vmovss xmm1,DWORD PTR [rip+0x0]        # 2d <rsqrt+0x2d>
+  2c:	00 
+  2d:	5a                   	pop    rdx
+  2e:	c5 f2 5e c0          	vdivss xmm0,xmm1,xmm0
+  32:	c3                   	ret    
+  33:	0f 1f 44 00 00       	nop    DWORD PTR [rax+rax*1+0x0]
+
+0000000000000038 <Q_rsqrt>:
+  38:	f3 0f 1e fa          	endbr64 
+  3c:	48 83 ec 28          	sub    rsp,0x28
+  40:	64 48 8b 04 25 28 00 	mov    rax,QWORD PTR fs:0x28
+  47:	00 00 
+  49:	48 89 44 24 18       	mov    QWORD PTR [rsp+0x18],rax
+  4e:	31 c0                	xor    eax,eax
+  50:	c5 fa 11 44 24 14    	vmovss DWORD PTR [rsp+0x14],xmm0
+  56:	b8 df 59 37 5f       	mov    eax,0x5f3759df
+  5b:	48 8b 54 24 14       	mov    rdx,QWORD PTR [rsp+0x14]
+  60:	c5 fa 59 05 00 00 00 	vmulss xmm0,xmm0,DWORD PTR [rip+0x0]        # 68 <Q_rsqrt+0x30>
+  67:	00 
+  68:	48 d1 fa             	sar    rdx,1
+  6b:	29 d0                	sub    eax,edx
+  6d:	89 44 24 0c          	mov    DWORD PTR [rsp+0xc],eax
+  71:	c5 f9 6e 4c 24 0c    	vmovd  xmm1,DWORD PTR [rsp+0xc]
+  77:	48 8b 44 24 18       	mov    rax,QWORD PTR [rsp+0x18]
+  7c:	64 48 2b 04 25 28 00 	sub    rax,QWORD PTR fs:0x28
+  83:	00 00 
+  85:	c5 fa 59 c1          	vmulss xmm0,xmm0,xmm1
+  89:	c4 e3 f1 7a 05 00 00 	vfnmaddss xmm0,xmm1,xmm0,DWORD PTR [rip+0x0]        # 93 <Q_rsqrt+0x5b>
+  90:	00 00 00 
+  93:	c5 f2 59 c0          	vmulss xmm0,xmm1,xmm0
+  97:	75 05                	jne    9e <Q_rsqrt+0x66>
+  99:	48 83 c4 28          	add    rsp,0x28
+  9d:	c3                   	ret    
+  9e:	e8 00 00 00 00       	call   a3 <Q_rsqrt+0x6b>
+```
+
+## Output
+
+```
+2020-12-31T15:56:49+00:00
+Running ./build/bench
+Run on (4 X 3600 MHz CPU s)
+CPU Caches:
+  L1 Data 16 KiB (x4)
+  L1 Instruction 64 KiB (x2)
+  L2 Unified 2048 KiB (x2)
+  L3 Unified 8192 KiB (x1)
+Load Average: 1.55, 0.61, 0.23
+--------------------------------------------------------------------
+Benchmark                          Time             CPU   Iterations
+--------------------------------------------------------------------
+BM_sqrt/normal_rsqrt_test       5.76 ns         5.76 ns    121140817
+BM_sqrt/quake_rsqrt_test        31.1 ns         31.1 ns     22232246
+```
+
+# Intel(R) Core(TM) i3-4005U CPU @ 1.70GHz
+
+## GCC version
+
+```
+gcc (Ubuntu 10.2.0-13ubuntu1) 10.2.0
+Copyright (C) 2020 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+```
+
+## Assembly
+
+```
+
+build/CMakeFiles/bench.dir/rsqrt.c.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 <rsqrt>:
+   0:	f3 0f 1e fa          	endbr64 
+   4:	c5 f0 57 c9          	vxorps xmm1,xmm1,xmm1
+   8:	c5 f8 2e c8          	vucomiss xmm1,xmm0
+   c:	77 11                	ja     1f <rsqrt+0x1f>
+   e:	c5 fa 51 c0          	vsqrtss xmm0,xmm0,xmm0
+  12:	c5 fa 10 0d 00 00 00 	vmovss xmm1,DWORD PTR [rip+0x0]        # 1a <rsqrt+0x1a>
+  19:	00 
+  1a:	c5 f2 5e c0          	vdivss xmm0,xmm1,xmm0
+  1e:	c3                   	ret    
+  1f:	50                   	push   rax
+  20:	e8 00 00 00 00       	call   25 <rsqrt+0x25>
+  25:	c5 fa 10 0d 00 00 00 	vmovss xmm1,DWORD PTR [rip+0x0]        # 2d <rsqrt+0x2d>
+  2c:	00 
+  2d:	5a                   	pop    rdx
+  2e:	c5 f2 5e c0          	vdivss xmm0,xmm1,xmm0
+  32:	c3                   	ret    
+  33:	66 66 2e 0f 1f 84 00 	data16 nop WORD PTR cs:[rax+rax*1+0x0]
+  3a:	00 00 00 00 
+  3e:	66 90                	xchg   ax,ax
+
+0000000000000040 <Q_rsqrt>:
+  40:	f3 0f 1e fa          	endbr64 
+  44:	48 83 ec 18          	sub    rsp,0x18
+  48:	64 48 8b 04 25 28 00 	mov    rax,QWORD PTR fs:0x28
+  4f:	00 00 
+  51:	48 89 44 24 08       	mov    QWORD PTR [rsp+0x8],rax
+  56:	31 c0                	xor    eax,eax
+  58:	c5 fa 11 44 24 04    	vmovss DWORD PTR [rsp+0x4],xmm0
+  5e:	c5 fa 59 05 00 00 00 	vmulss xmm0,xmm0,DWORD PTR [rip+0x0]        # 66 <Q_rsqrt+0x26>
+  65:	00 
+  66:	b8 01 00 00 00       	mov    eax,0x1
+  6b:	c4 e2 fa f7 54 24 04 	sarx   rdx,QWORD PTR [rsp+0x4],rax
+  72:	b8 df 59 37 5f       	mov    eax,0x5f3759df
+  77:	29 d0                	sub    eax,edx
+  79:	c5 f9 6e c8          	vmovd  xmm1,eax
+  7d:	c5 fa 59 c1          	vmulss xmm0,xmm0,xmm1
+  81:	c4 e2 71 ad 05 00 00 	vfnmadd213ss xmm0,xmm1,DWORD PTR [rip+0x0]        # 8a <Q_rsqrt+0x4a>
+  88:	00 00 
+  8a:	c5 f2 59 c0          	vmulss xmm0,xmm1,xmm0
+  8e:	48 8b 44 24 08       	mov    rax,QWORD PTR [rsp+0x8]
+  93:	64 48 2b 04 25 28 00 	sub    rax,QWORD PTR fs:0x28
+  9a:	00 00 
+  9c:	75 05                	jne    a3 <Q_rsqrt+0x63>
+  9e:	48 83 c4 18          	add    rsp,0x18
+  a2:	c3                   	ret    
+  a3:	e8 00 00 00 00       	call   a8 <Q_rsqrt+0x68>
+```
+
+## Output
+
+```
+2020-12-31T16:18:16+00:00
+Running ./build/bench
+Run on (4 X 1700 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x2)
+  L1 Instruction 32 KiB (x2)
+  L2 Unified 256 KiB (x2)
+  L3 Unified 3072 KiB (x1)
+Load Average: 4.04, 1.72, 0.75
+--------------------------------------------------------------------
+Benchmark                          Time             CPU   Iterations
+--------------------------------------------------------------------
+BM_sqrt/normal_rsqrt_test       8.29 ns         8.29 ns     84478286
+BM_sqrt/quake_rsqrt_test        21.3 ns         21.3 ns     32904682
+```
+
