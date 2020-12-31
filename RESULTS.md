@@ -275,3 +275,204 @@ BM_sqrt/normal_rsqrt_test       29.8 ns         29.6 ns     23640200
 BM_sqrt/quake_rsqrt_test        17.4 ns         16.2 ns     43432804
 ```
 
+# Intel(R) Pentium(R) III CPU             1200MHz
+
+## GCC version
+
+```
+gcc (Debian 8.3.0-6) 8.3.0
+Copyright (C) 2018 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+```
+
+## Assembly
+
+```
+
+build/CMakeFiles/bench.dir/rsqrt.c.o:     file format elf32-i386
+
+
+Disassembly of section .text:
+
+00000000 <rsqrt>:
+   0:	53                   	push   ebx
+   1:	e8 fc ff ff ff       	call   2 <rsqrt+0x2>
+   6:	81 c3 02 00 00 00    	add    ebx,0x2
+   c:	83 ec 18             	sub    esp,0x18
+   f:	d9 44 24 20          	fld    DWORD PTR [esp+0x20]
+  13:	d9 c0                	fld    st(0)
+  15:	d9 fa                	fsqrt  
+  17:	d9 ee                	fldz   
+  19:	df ea                	fucomip st,st(2)
+  1b:	77 0b                	ja     28 <rsqrt+0x28>
+  1d:	dd d9                	fstp   st(1)
+  1f:	d9 e8                	fld1   
+  21:	83 c4 18             	add    esp,0x18
+  24:	de f1                	fdivrp st(1),st
+  26:	5b                   	pop    ebx
+  27:	c3                   	ret    
+  28:	d9 5c 24 0c          	fstp   DWORD PTR [esp+0xc]
+  2c:	83 ec 10             	sub    esp,0x10
+  2f:	d9 1c 24             	fstp   DWORD PTR [esp]
+  32:	e8 fc ff ff ff       	call   33 <rsqrt+0x33>
+  37:	dd d8                	fstp   st(0)
+  39:	83 c4 10             	add    esp,0x10
+  3c:	d9 44 24 0c          	fld    DWORD PTR [esp+0xc]
+  40:	eb dd                	jmp    1f <rsqrt+0x1f>
+  42:	8d b4 26 00 00 00 00 	lea    esi,[esi+eiz*1+0x0]
+  49:	8d b4 26 00 00 00 00 	lea    esi,[esi+eiz*1+0x0]
+
+00000050 <Q_rsqrt>:
+  50:	e8 fc ff ff ff       	call   51 <Q_rsqrt+0x1>
+  55:	05 01 00 00 00       	add    eax,0x1
+  5a:	83 ec 08             	sub    esp,0x8
+  5d:	b9 df 59 37 5f       	mov    ecx,0x5f3759df
+  62:	8b 54 24 0c          	mov    edx,DWORD PTR [esp+0xc]
+  66:	d1 fa                	sar    edx,1
+  68:	29 d1                	sub    ecx,edx
+  6a:	89 0c 24             	mov    DWORD PTR [esp],ecx
+  6d:	d9 80 00 00 00 00    	fld    DWORD PTR [eax+0x0]
+  73:	d9 44 24 0c          	fld    DWORD PTR [esp+0xc]
+  77:	de c9                	fmulp  st(1),st
+  79:	d8 0c 24             	fmul   DWORD PTR [esp]
+  7c:	d8 0c 24             	fmul   DWORD PTR [esp]
+  7f:	d9 80 00 00 00 00    	fld    DWORD PTR [eax+0x0]
+  85:	d9 54 24 04          	fst    DWORD PTR [esp+0x4]
+  89:	de e1                	fsubrp st(1),st
+  8b:	d8 0c 24             	fmul   DWORD PTR [esp]
+  8e:	83 c4 08             	add    esp,0x8
+  91:	c3                   	ret    
+
+Disassembly of section .text.__x86.get_pc_thunk.ax:
+
+00000000 <__x86.get_pc_thunk.ax>:
+   0:	8b 04 24             	mov    eax,DWORD PTR [esp]
+   3:	c3                   	ret    
+
+Disassembly of section .text.__x86.get_pc_thunk.bx:
+
+00000000 <__x86.get_pc_thunk.bx>:
+   0:	8b 1c 24             	mov    ebx,DWORD PTR [esp]
+   3:	c3                   	ret    
+```
+
+## Output
+
+```
+2020-12-31T01:51:07+01:00
+Running ./build/bench
+Run on (1 X 1199.98 MHz CPU )
+Load Average: 0.80, 0.95, 0.72
+***WARNING*** Library was built as DEBUG. Timings may be affected.
+--------------------------------------------------------------------
+Benchmark                          Time             CPU   Iterations
+--------------------------------------------------------------------
+BM_sqrt/normal_rsqrt_test       88.8 ns         88.7 ns      7888079
+BM_sqrt/quake_rsqrt_test        24.0 ns         24.0 ns     29173143
+```
+
+# Intel(R) Pentium(R) III CPU             1200MHz (with `-mfpmath=sse`)
+
+## GCC version
+
+```
+gcc (Debian 8.3.0-6) 8.3.0
+Copyright (C) 2018 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+```
+
+## Assembly
+
+```
+
+build/CMakeFiles/bench.dir/rsqrt.c.o:     file format elf32-i386
+
+
+Disassembly of section .text:
+
+00000000 <rsqrt>:
+   0:	53                   	push   ebx
+   1:	0f 57 d2             	xorps  xmm2,xmm2
+   4:	e8 fc ff ff ff       	call   5 <rsqrt+0x5>
+   9:	81 c3 02 00 00 00    	add    ebx,0x2
+   f:	83 ec 18             	sub    esp,0x18
+  12:	f3 0f 10 44 24 20    	movss  xmm0,DWORD PTR [esp+0x20]
+  18:	0f 2e d0             	ucomiss xmm2,xmm0
+  1b:	f3 0f 51 c8          	sqrtss xmm1,xmm0
+  1f:	77 1b                	ja     3c <rsqrt+0x3c>
+  21:	f3 0f 10 83 00 00 00 	movss  xmm0,DWORD PTR [ebx+0x0]
+  28:	00 
+  29:	f3 0f 5e c1          	divss  xmm0,xmm1
+  2d:	f3 0f 11 44 24 0c    	movss  DWORD PTR [esp+0xc],xmm0
+  33:	d9 44 24 0c          	fld    DWORD PTR [esp+0xc]
+  37:	83 c4 18             	add    esp,0x18
+  3a:	5b                   	pop    ebx
+  3b:	c3                   	ret    
+  3c:	f3 0f 11 4c 24 0c    	movss  DWORD PTR [esp+0xc],xmm1
+  42:	83 ec 10             	sub    esp,0x10
+  45:	f3 0f 11 04 24       	movss  DWORD PTR [esp],xmm0
+  4a:	e8 fc ff ff ff       	call   4b <rsqrt+0x4b>
+  4f:	dd d8                	fstp   st(0)
+  51:	83 c4 10             	add    esp,0x10
+  54:	f3 0f 10 4c 24 0c    	movss  xmm1,DWORD PTR [esp+0xc]
+  5a:	eb c5                	jmp    21 <rsqrt+0x21>
+  5c:	8d 74 26 00          	lea    esi,[esi+eiz*1+0x0]
+
+00000060 <Q_rsqrt>:
+  60:	e8 fc ff ff ff       	call   61 <Q_rsqrt+0x1>
+  65:	81 c2 02 00 00 00    	add    edx,0x2
+  6b:	83 ec 04             	sub    esp,0x4
+  6e:	b8 df 59 37 5f       	mov    eax,0x5f3759df
+  73:	f3 0f 10 44 24 08    	movss  xmm0,DWORD PTR [esp+0x8]
+  79:	8b 4c 24 08          	mov    ecx,DWORD PTR [esp+0x8]
+  7d:	d1 f9                	sar    ecx,1
+  7f:	29 c8                	sub    eax,ecx
+  81:	89 04 24             	mov    DWORD PTR [esp],eax
+  84:	f3 0f 10 14 24       	movss  xmm2,DWORD PTR [esp]
+  89:	f3 0f 10 9a 00 00 00 	movss  xmm3,DWORD PTR [edx+0x0]
+  90:	00 
+  91:	f3 0f 10 8a 00 00 00 	movss  xmm1,DWORD PTR [edx+0x0]
+  98:	00 
+  99:	f3 0f 59 c3          	mulss  xmm0,xmm3
+  9d:	f3 0f 59 c2          	mulss  xmm0,xmm2
+  a1:	f3 0f 59 c2          	mulss  xmm0,xmm2
+  a5:	f3 0f 5c c8          	subss  xmm1,xmm0
+  a9:	0f 28 c1             	movaps xmm0,xmm1
+  ac:	f3 0f 59 c2          	mulss  xmm0,xmm2
+  b0:	f3 0f 11 04 24       	movss  DWORD PTR [esp],xmm0
+  b5:	d9 04 24             	fld    DWORD PTR [esp]
+  b8:	83 c4 04             	add    esp,0x4
+  bb:	c3                   	ret    
+
+Disassembly of section .text.__x86.get_pc_thunk.dx:
+
+00000000 <__x86.get_pc_thunk.dx>:
+   0:	8b 14 24             	mov    edx,DWORD PTR [esp]
+   3:	c3                   	ret    
+
+Disassembly of section .text.__x86.get_pc_thunk.bx:
+
+00000000 <__x86.get_pc_thunk.bx>:
+   0:	8b 1c 24             	mov    ebx,DWORD PTR [esp]
+   3:	c3                   	ret    
+```
+
+## Output
+
+```
+2020-12-31T01:52:48+01:00
+Running ./build/bench
+Run on (1 X 1199.98 MHz CPU )
+Load Average: 0.50, 0.76, 0.67
+***WARNING*** Library was built as DEBUG. Timings may be affected.
+--------------------------------------------------------------------
+Benchmark                          Time             CPU   Iterations
+--------------------------------------------------------------------
+BM_sqrt/normal_rsqrt_test       45.4 ns         45.4 ns     15426801
+BM_sqrt/quake_rsqrt_test        27.7 ns         27.7 ns     25312028
+```
+
