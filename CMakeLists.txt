@@ -3,6 +3,8 @@ project(rsqrt_bench C CXX)
 
 find_package(Threads)
 
+set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
+add_subdirectory(benchmark)
 add_executable(bench rsqrt.c bench.cpp)
 
 set_property(TARGET bench
@@ -14,8 +16,4 @@ set_property(TARGET bench
   PROPERTY CXX_EXTENSIONS FALSE
 )
 
-target_link_libraries(bench 
-  ${CMAKE_SOURCE_DIR}/benchmark/build/src/libbenchmark.a
-  ${CMAKE_THREAD_LIBS_INIT}
-)
-target_include_directories(bench PRIVATE benchmark/include)
+target_link_libraries(bench benchmark::benchmark)

@@ -20,18 +20,12 @@ touch RESULTS.md
 fname=$(mktemp)
 trap del_tmp_report EXIT
 
-mkdir -p benchmark/build
-pushd benchmark/build
-cmake -DCMAKE_BUILD_TYPE=Release -DBENCHMARK_ENABLE_GTEST_TESTS=OFF ..
-cmake --build .
-popd
-
 rm -fR build
 mkdir -p build
 pushd build
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS=-march=native \
+cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS=-march=native \
   -DCMAKE_CXX_FLAGS=-march=native ..
-cmake --build .
+ninja
 popd
 
 cpuname=$(awk -F ': ' '/model name/ { print $2 }' /proc/cpuinfo | uniq)
