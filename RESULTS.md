@@ -1058,3 +1058,77 @@ Benchmark                          Time             CPU   Iterations
 BM_sqrt/normal_rsqrt_test       1.38 ns         1.38 ns    495658776
 BM_sqrt/quake_rsqrt_test        7.29 ns         7.29 ns     96048657
 ```
+# AMD Ryzen 9 5950X 16-Core Processor
+
+## GCC version
+
+```
+gcc (GCC) 12.2.0
+Copyright (C) 2022 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+```
+
+## Assembly
+
+```
+
+build/CMakeFiles/bench.dir/rsqrt.c.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 <rsqrt>:
+   0:	c5 f0 57 c9          	vxorps xmm1,xmm1,xmm1
+   4:	c5 f8 2e c8          	vucomiss xmm1,xmm0
+   8:	77 11                	ja     1b <rsqrt+0x1b>
+   a:	c5 fa 10 0d 00 00 00 	vmovss xmm1,DWORD PTR [rip+0x0]        # 12 <rsqrt+0x12>
+  11:	00 
+  12:	c5 fa 51 c0          	vsqrtss xmm0,xmm0,xmm0
+  16:	c5 f2 5e c0          	vdivss xmm0,xmm1,xmm0
+  1a:	c3                   	ret
+  1b:	50                   	push   rax
+  1c:	e8 00 00 00 00       	call   21 <rsqrt+0x21>
+  21:	c5 fa 10 0d 00 00 00 	vmovss xmm1,DWORD PTR [rip+0x0]        # 29 <rsqrt+0x29>
+  28:	00 
+  29:	5a                   	pop    rdx
+  2a:	c5 f2 5e c0          	vdivss xmm0,xmm1,xmm0
+  2e:	c3                   	ret
+  2f:	90                   	nop
+
+0000000000000030 <Q_rsqrt>:
+  30:	c5 fa 11 44 24 fc    	vmovss DWORD PTR [rsp-0x4],xmm0
+  36:	c5 fa 59 05 00 00 00 	vmulss xmm0,xmm0,DWORD PTR [rip+0x0]        # 3e <Q_rsqrt+0xe>
+  3d:	00 
+  3e:	b8 01 00 00 00       	mov    eax,0x1
+  43:	c4 e2 fa f7 54 24 fc 	sarx   rdx,QWORD PTR [rsp-0x4],rax
+  4a:	b8 df 59 37 5f       	mov    eax,0x5f3759df
+  4f:	29 d0                	sub    eax,edx
+  51:	c5 f9 6e c8          	vmovd  xmm1,eax
+  55:	c5 fa 59 c1          	vmulss xmm0,xmm0,xmm1
+  59:	c4 e2 71 ad 05 00 00 	vfnmadd213ss xmm0,xmm1,DWORD PTR [rip+0x0]        # 62 <Q_rsqrt+0x32>
+  60:	00 00 
+  62:	c5 f2 59 c0          	vmulss xmm0,xmm1,xmm0
+  66:	c3                   	ret
+```
+
+## Output
+
+```
+2022-09-25T16:13:21+02:00
+Running ./build/bench
+Run on (32 X 3600.42 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x16)
+  L1 Instruction 32 KiB (x16)
+  L2 Unified 512 KiB (x16)
+  L3 Unified 32768 KiB (x2)
+Load Average: 2.83, 0.65, 0.60
+--------------------------------------------------------------------
+Benchmark                          Time             CPU   Iterations
+--------------------------------------------------------------------
+BM_sqrt/normal_rsqrt_test       1.84 ns         1.84 ns    378885339
+BM_sqrt/quake_rsqrt_test        7.63 ns         7.63 ns     91110479
+```
+
