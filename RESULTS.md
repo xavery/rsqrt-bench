@@ -1132,3 +1132,80 @@ BM_sqrt/normal_rsqrt_test       1.84 ns         1.84 ns    378885339
 BM_sqrt/quake_rsqrt_test        7.63 ns         7.63 ns     91110479
 ```
 
+# AMD Ryzen 7 5800X3D 8-Core Processor
+
+## GCC version
+
+```
+gcc (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0
+Copyright (C) 2021 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+```
+
+## Assembly
+
+```
+
+build/CMakeFiles/bench.dir/rsqrt.c.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 <rsqrt>:
+   0:	f3 0f 1e fa          	endbr64 
+   4:	c5 f0 57 c9          	vxorps xmm1,xmm1,xmm1
+   8:	c5 f8 2e c8          	vucomiss xmm1,xmm0
+   c:	77 11                	ja     1f <rsqrt+0x1f>
+   e:	c5 fa 10 0d 00 00 00 	vmovss xmm1,DWORD PTR [rip+0x0]        # 16 <rsqrt+0x16>
+  15:	00 
+  16:	c5 fa 51 c0          	vsqrtss xmm0,xmm0,xmm0
+  1a:	c5 f2 5e c0          	vdivss xmm0,xmm1,xmm0
+  1e:	c3                   	ret    
+  1f:	50                   	push   rax
+  20:	e8 00 00 00 00       	call   25 <rsqrt+0x25>
+  25:	c5 fa 10 0d 00 00 00 	vmovss xmm1,DWORD PTR [rip+0x0]        # 2d <rsqrt+0x2d>
+  2c:	00 
+  2d:	5a                   	pop    rdx
+  2e:	c5 f2 5e c0          	vdivss xmm0,xmm1,xmm0
+  32:	c3                   	ret    
+  33:	66 66 2e 0f 1f 84 00 	data16 cs nop WORD PTR [rax+rax*1+0x0]
+  3a:	00 00 00 00 
+  3e:	66 90                	xchg   ax,ax
+
+0000000000000040 <Q_rsqrt>:
+  40:	f3 0f 1e fa          	endbr64 
+  44:	c5 fa 11 44 24 fc    	vmovss DWORD PTR [rsp-0x4],xmm0
+  4a:	c5 fa 59 05 00 00 00 	vmulss xmm0,xmm0,DWORD PTR [rip+0x0]        # 52 <Q_rsqrt+0x12>
+  51:	00 
+  52:	b8 01 00 00 00       	mov    eax,0x1
+  57:	c4 e2 fa f7 54 24 fc 	sarx   rdx,QWORD PTR [rsp-0x4],rax
+  5e:	b8 df 59 37 5f       	mov    eax,0x5f3759df
+  63:	29 d0                	sub    eax,edx
+  65:	c5 f9 6e c8          	vmovd  xmm1,eax
+  69:	c5 fa 59 c1          	vmulss xmm0,xmm0,xmm1
+  6d:	c4 e2 71 ad 05 00 00 	vfnmadd213ss xmm0,xmm1,DWORD PTR [rip+0x0]        # 76 <Q_rsqrt+0x36>
+  74:	00 00 
+  76:	c5 f2 59 c0          	vmulss xmm0,xmm1,xmm0
+  7a:	c3                   	ret    
+```
+
+## Output
+
+```
+2022-10-28T14:14:00+00:00
+Running ./build/bench
+Run on (16 X 3573.13 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x8)
+  L1 Instruction 32 KiB (x8)
+  L2 Unified 512 KiB (x8)
+  L3 Unified 98304 KiB (x1)
+Load Average: 2.13, 1.55, 0.80
+--------------------------------------------------------------------
+Benchmark                          Time             CPU   Iterations
+--------------------------------------------------------------------
+BM_sqrt/normal_rsqrt_test       1.86 ns         1.86 ns    371953019
+BM_sqrt/quake_rsqrt_test        7.92 ns         7.92 ns     88433519
+```
